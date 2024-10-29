@@ -1,25 +1,24 @@
 pipeline {
     agent any
     stages {
+        stage('Clone') {
+            steps {
+                git 'https://github.com/yourusername/java-project.git'
+            }
+        }
         stage('Build') {
             steps {
-                sh 'mvn clean install'
+                sh 'mvn clean package'
             }
         }
-        stage('Test') {
+        stage('Docker Build') {
             steps {
-                sh 'mvn test'
-            }
-        }
-        stage('Package') {
-            steps {
-                sh 'mvn package'
+                sh 'docker build -t your-docker-repo/java-project .'
             }
         }
         stage('Deploy to Kubernetes') {
             steps {
                 sh 'kubectl apply -f k8s/deployment.yaml'
-                sh 'kubectl apply -f k8s/service.yaml'
             }
         }
     }
